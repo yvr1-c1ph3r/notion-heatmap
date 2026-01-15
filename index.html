@@ -41,8 +41,8 @@
 </head>
 
 <body>
-  <h1>打鍵数管理</h1>
-  <div class="week" id="week"></div>
+<h1>打鍵数管理</h1>
+<div class="week" id="week"></div>
 
 <script>
   // ===============================
@@ -51,16 +51,12 @@
   const params = new URLSearchParams(window.location.search)
   const score = Number(params.get("score") || 0)
   const dateStr = params.get("date")
-
   const weekEl = document.getElementById("week")
 
   if (!dateStr) {
     weekEl.textContent = "No data"
   } else {
 
-    // ===============================
-    // 日付チェック（今年 + 直近12週）
-    // ===============================
     const date = new Date(dateStr)
     const now = new Date()
 
@@ -68,48 +64,23 @@
     const fromDate = new Date(now)
     fromDate.setDate(now.getDate() - weeks * 7)
 
-    if (
-      date.getFullYear() !== now.getFullYear() ||
-      date < fromDate ||
-      date > now
-    ) {
+    const isValid =
+      date.getFullYear() === now.getFullYear() &&
+      date >= fromDate &&
+      date <= now
+
+    if (!isValid) {
       weekEl.textContent = "No data"
-      return
-    }
+    } else {
 
-    // ===============================
-    // 曜日取得（0=日, 6=土）
-    // ===============================
-    const day = date.getDay()
+      // ===============================
+      // 曜日取得（0=日, 6=土）
+      // ===============================
+      const day = date.getDay()
 
-    // ===============================
-    // スコア → 色レベル変換
-    // ===============================
-    function getLevel(score) {
-      if (score >= 20) return "l5"
-      if (score >= 15) return "l4"
-      if (score >= 10) return "l3"
-      if (score >= 5)  return "l2"
-      if (score > 0)   return "l1"
-      return ""
-    }
-
-    const level = getLevel(score)
-
-    // ===============================
-    // 1週間（7マス）を描画
-    // ===============================
-    for (let i = 0; i < 7; i++) {
-      const cell = document.createElement("div")
-      cell.className = "cell"
-
-      if (i === day && level) {
-        cell.classList.add(level)
-      }
-
-      weekEl.appendChild(cell)
-    }
-  }
-</script>
-</body>
-</html>
+      // ===============================
+      // スコア → 色レベル変換
+      // ===============================
+      function getLevel(score) {
+        if (score >= 20) return "l5"
+        if (score >= 15
