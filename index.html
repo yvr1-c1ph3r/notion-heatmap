@@ -1,62 +1,86 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <title>Notion Heatmap Widget</title>
+<meta charset="UTF-8" />
+<title>Daily Progress</title>
 
-  <!-- ② CSS：見た目 -->
-  <style>
-    body {
-      margin: 0;
-      padding: 8px;
-      font-family: sans-serif;
-    }
+<style>
+  body {
+    margin: 0;
+    padding: 8px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont;
+    font-size: 12px;
+  }
 
-    #date {
-      font-size: 12px;
-      margin-bottom: 6px;
-      color: #555;
-    }
+  h1 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    font-weight: 600;
+  }
 
-    #heatmap {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
+  .week {
+    display: grid;
+    grid-template-columns: repeat(7, 16px);
+    gap: 4px;
+  }
 
-    .cell {
-      width: 16px;
-      height: 16px;
-      background: #e0e0e0;
-    }
+  .cell {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    background: #ebedf0;
+  }
 
-    .cell.active {
-      background: #4caf50;
-    }
-  </style>
+  /* 🎨 5段階カラー */
+  .l1 { background: #c6e48b; }
+  .l2 { background: #7bc96f; }
+  .l3 { background: #239a3b; }
+  .l4 { background: #196127; }
+  .l5 { background: #0f3d1e; }
+</style>
 </head>
 
 <body>
-  <!-- ① HTML：表示する場所 -->
-  <div id="date"></div>
-  <div id="heatmap"></div>
+  <h1>Daily Progress</h1>
+  <div class="week" id="week"></div>
 
-  <!-- ③ JavaScript：ロジック -->
-  <script>
-    const params = new URLSearchParams(window.location.search)
-    const score = Number(params.get("score") || 0)
-    const date = params.get("date") || ""
+<script>
+  const params = new URLSearchParams(window.location.search)
+  const score = Number(params.get("score") || 0)
+  const dateStr = params.get("date")
 
-    const container = document.getElementById("heatmap")
-    const dateEl = document.getElementById("date")
+  const weekEl = document.getElementById("week")
 
-    dateEl.textContent = date
+  if (!dateStr) {
+    weekEl.textContent = "No data"
+  } else {
+    const date = new Date(dateStr)
+    const day = date.getDay() // 0=日, 6=土
 
-    for (let i = 0; i < score; i++) {
-      const box = document.createElement("div")
-      box.className = "cell active"
-      container.appendChild(box)
+    // スコア → レベル変換
+    function getLevel(score) {
+      if (score >= 20) return "l5"
+      if (score >= 15) return "l4"
+      if (score >= 10) return "l3"
+      if (score >= 5)  return "l2"
+      if (score > 0)   return "l1"
+      return ""
     }
-  </script>
+
+    const level = getLevel(score)
+
+    // 1週間分のマスを作る
+    for (let i = 0; i < 7; i++) {
+      const cell = document.createElement("div")
+      cell.className = "cell"
+
+      if (i === day && level) {
+        cell.classList.add(level)
+      }
+
+      weekEl.appendChild(cell)
+    }
+  }
+</script>
 </body>
 </html>
