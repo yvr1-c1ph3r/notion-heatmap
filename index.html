@@ -71,14 +71,14 @@
     const fromDate = new Date(now)
     fromDate.setDate(now.getDate() - weeks * 7)
 
-    if (
-      date.getFullYear() !== now.getFullYear() ||
-      date < fromDate ||
-      date > now
-    ) {
-      weekEl.textContent = "No data"
-      return
-    }
+    // if (
+    //   date.getFullYear() !== now.getFullYear() ||
+    //   date < fromDate ||
+    //   date > now
+    // ) {
+    //   weekEl.textContent = "No data"
+    //   return
+    // }
 
     // ===============================
     // 曜日取得（0=日, 6=土）
