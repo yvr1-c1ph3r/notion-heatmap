@@ -2,32 +2,116 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8" />
-<title>debug</title>
+<title>打鍵数管理</title>
+
 <style>
-  body { font-family: system-ui; font-size: 12px; padding: 8px; }
-  pre { background: #f5f5f5; padding: 8px; }
-</style>
-</head>
-<body>
-
-<h1>DEBUG</h1>
-
-<pre id="out"></pre>
-
-<script>
-  const params = new URLSearchParams(window.location.search)
-
-  const debug = {
-    fullURL: window.location.href,
-    search: window.location.search,
-    score: params.get("score"),
-    date: params.get("date"),
-    userAgent: navigator.userAgent
+  body {
+    margin: 0;
+    padding: 8px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont;
+    font-size: 12px;
   }
 
-  document.getElementById("out").textContent =
-    JSON.stringify(debug, null, 2)
-</script>
+  h1 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    font-weight: 600;
+  }
 
+  .week {
+    display: grid;
+    grid-template-columns: repeat(7, 16px);
+    gap: 4px;
+  }
+
+  .cell {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    background: #ebedf0;
+  }
+
+  /* 🎨 5段階カラー */
+  .l1 { background: #c6e48b; }
+  .l2 { background: #7bc96f; }
+  .l3 { background: #239a3b; }
+  .l4 { background: #196127; }
+  .l5 { background: #0f3d1e; }
+</style>
+</head>
+
+<body>
+  <h1>打鍵数管理</h1>
+  <div class="week" id="week"></div>
+
+<script>
+  // ===============================
+  // hash パラメータ取得（Notion対応）
+  // ===============================
+  const hash = window.location.hash.replace(/^#/, "")
+  const params = new URLSearchParams(hash)
+
+  const score = Number(params.get("score") || 0)
+  const dateStr = params.get("date")
+
+  const weekEl = document.getElementById("week")
+
+  if (!dateStr) {
+    weekEl.textContent = "No data"
+  } else {
+
+    // ===============================
+    // 日付チェック（今年 + 直近12週）
+    // ===============================
+    const date = new Date(dateStr)
+    const now = new Date()
+
+    const weeks = 12
+    const fromDate = new Date(now)
+    fromDate.setDate(now.getDate() - weeks * 7)
+
+    if (
+      date.getFullYear() !== now.getFullYear() ||
+      date < fromDate ||
+      date > now
+    ) {
+      weekEl.textContent = "No data"
+      return
+    }
+
+    // ===============================
+    // 曜日取得（0=日, 6=土）
+    // ===============================
+    const day = date.getDay()
+
+    // ===============================
+    // スコア → 色レベル変換
+    // ===============================
+    function getLevel(score) {
+      if (score >= 20) return "l5"
+      if (score >= 15) return "l4"
+      if (score >= 10) return "l3"
+      if (score >= 5)  return "l2"
+      if (score > 0)   return "l1"
+      return ""
+    }
+
+    const level = getLevel(score)
+
+    // ===============================
+    // 1週間（横並び）描画
+    // ===============================
+    for (let i = 0; i < 7; i++) {
+      const cell = document.createElement("div")
+      cell.className = "cell"
+
+      if (i === day && level) {
+        cell.classList.add(level)
+      }
+
+      weekEl.appendChild(cell)
+    }
+  }
+</script>
 </body>
-</html>
+</html
