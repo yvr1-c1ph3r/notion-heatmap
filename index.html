@@ -45,6 +45,9 @@
   <div class="week" id="week"></div>
 
 <script>
+  // ===============================
+  // URL パラメータ取得
+  // ===============================
   const params = new URLSearchParams(window.location.search)
   const score = Number(params.get("score") || 0)
   const dateStr = params.get("date")
@@ -54,10 +57,34 @@
   if (!dateStr) {
     weekEl.textContent = "No data"
   } else {
-    const date = new Date(dateStr)
-    const day = date.getDay() // 0=日, 6=土
 
-    // スコア → レベル変換
+    // ===============================
+    // 日付チェック（今年 + 直近12週）
+    // ===============================
+    const date = new Date(dateStr)
+    const now = new Date()
+
+    const weeks = 12
+    const fromDate = new Date(now)
+    fromDate.setDate(now.getDate() - weeks * 7)
+
+    if (
+      date.getFullYear() !== now.getFullYear() ||
+      date < fromDate ||
+      date > now
+    ) {
+      weekEl.textContent = "No data"
+      return
+    }
+
+    // ===============================
+    // 曜日取得（0=日, 6=土）
+    // ===============================
+    const day = date.getDay()
+
+    // ===============================
+    // スコア → 色レベル変換
+    // ===============================
     function getLevel(score) {
       if (score >= 20) return "l5"
       if (score >= 15) return "l4"
@@ -69,7 +96,9 @@
 
     const level = getLevel(score)
 
-    // 1週間分のマスを作る
+    // ===============================
+    // 1週間（7マス）を描画
+    // ===============================
     for (let i = 0; i < 7; i++) {
       const cell = document.createElement("div")
       cell.className = "cell"
