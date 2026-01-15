@@ -1,1 +1,21 @@
+<script>
+fetch("/api/heatmap")
+  .then(res => res.json())
+  .then(data => {
+    const heatmap = document.getElementById("heatmap");
+
+    data.forEach(d => {
+      const div = document.createElement("div");
+      div.className = "day";
+
+      if (d.total > 0 && d.total <= 5) div.classList.add("lv-1");
+      else if (d.total <= 10) div.classList.add("lv-2");
+      else if (d.total <= 20) div.classList.add("lv-3");
+      else if (d.total > 20) div.classList.add("lv-4");
+
+      div.title = `${d.date} : ${d.total}`;
+      heatmap.appendChild(div);
+    });
+  });
+</script>
 
