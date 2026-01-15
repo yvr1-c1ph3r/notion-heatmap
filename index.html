@@ -42,7 +42,6 @@
 
 <body>
   <h1>打鍵数管理</h1>
-  <p style="color:red">DEBUG VERSION</p>
   <div class="week" id="week"></div>
 
 <script>
@@ -60,25 +59,20 @@
   if (!dateStr) {
     weekEl.textContent = "No data"
   } else {
-
-    // ===============================
-    // 日付チェック（今年 + 直近12週）
-    // ===============================
     const date = new Date(dateStr)
     const now = new Date()
 
-    const weeks = 12
+    // ===============================
+    // 直近12週（84日）のみ表示
+    // ===============================
+    const days = 12 * 7
     const fromDate = new Date(now)
-    fromDate.setDate(now.getDate() - weeks * 7)
+    fromDate.setDate(now.getDate() - days)
 
-    // if (
-    //   date.getFullYear() !== now.getFullYear() ||
-    //   date < fromDate ||
-    //   date > now
-    // ) {
-    //   weekEl.textContent = "No data"
-    //   return
-    // }
+    if (date < fromDate || date > now) {
+      weekEl.textContent = "No data"
+      return
+    }
 
     // ===============================
     // 曜日取得（0=日, 6=土）
@@ -86,7 +80,7 @@
     const day = date.getDay()
 
     // ===============================
-    // スコア → 色レベル変換
+    // スコア → 色レベル
     // ===============================
     function getLevel(score) {
       if (score >= 20) return "l5"
@@ -100,7 +94,7 @@
     const level = getLevel(score)
 
     // ===============================
-    // 1週間（横並び）描画
+    // 横並び 7マス描画
     // ===============================
     for (let i = 0; i < 7; i++) {
       const cell = document.createElement("div")
