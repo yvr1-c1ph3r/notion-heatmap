@@ -1,3 +1,3 @@
-export default function handler(req, res) {
-  res.status(200).json({ ok: true });
-}
+app.get("/api/heatmap", (req, res) => {
+  res.json({ message: "heatmap api alive" })
+})
